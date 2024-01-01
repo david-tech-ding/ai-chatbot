@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import User from '../models/user.js';
 import { hash, compare } from 'bcrypt';
+import { createToken } from '../utils/token-manager.js';
+import ms from 'ms';
 
 export const getAllUsers = async (
   req: Request,
@@ -50,6 +52,11 @@ export const userLogin = async (
     if (!isPasswordCorrect) {
       return res.status(403).send('Password is incorrect');
     }
+    const token = createToken(
+      existingUser._id.toString(),
+      existingUser.email,
+      '7d'
+    );
     return res
       .status(200)
       .json({ message: 'OK', id: existingUser._id.toString() });
