@@ -1,7 +1,27 @@
 import { Box, Typography, Button } from '@mui/material';
+import { LuLogIn } from 'react-icons/lu';
 import CustomisedInput from '../components/shared/CustomisedInput';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 
 const Login = () => {
+  const auth = useAuth();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    console.log(email, password);
+    try {
+      toast.loading('Signing In...', { id: 'login' });
+      await auth?.login(email, password);
+      toast.loading('Signed In!', { id: 'login' });
+    } catch (error) {
+      console.log(error);
+      toast.error('Could not sign in', { id: 'login' });
+    }
+  };
+
   return (
     <Box
       display={'flex'}
@@ -13,6 +33,7 @@ const Login = () => {
       mt={16}
     >
       <form
+        onSubmit={handleSubmit}
         style={{
           margin: 'auto',
           padding: '30px',
@@ -49,13 +70,15 @@ const Login = () => {
               width: '400px',
               borderRadius: 2,
               bgcolor: 'black',
+              color: 'white',
               ':hover': {
                 bgcolor: 'white',
                 color: 'black',
               },
             }}
+            endIcon={<LuLogIn />}
           >
-            Submit
+            Login
           </Button>
         </Box>
       </form>

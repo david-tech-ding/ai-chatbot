@@ -3,6 +3,7 @@ import User from '../models/user.js';
 import { hash, compare } from 'bcrypt';
 import { createToken } from '../utils/token-manager.js';
 import { COOKIE_NAME } from '../utils/constants.js';
+import user from '../models/user.js';
 
 export const getAllUsers = async (
   req: Request,
@@ -54,7 +55,11 @@ export const userSignup = async (
       signed: true,
     });
 
-    return res.status(201).json({ message: 'OK', id: user._id.toString() });
+    return res.status(201).json({
+      message: 'OK',
+      name: existingUser.name,
+      email: existingUser.email,
+    });
   } catch (error) {
     return res.status(404).json({ Message: 'Error', cause: error.message });
     console.log(error);
@@ -99,9 +104,11 @@ export const userLogin = async (
       signed: true,
     });
 
-    return res
-      .status(200)
-      .json({ message: 'OK', id: existingUser._id.toString() });
+    return res.status(200).json({
+      message: 'OK',
+      name: existingUser.name,
+      email: existingUser.email,
+    });
   } catch (error) {
     return res.status(404).json({ Message: 'Error', cause: error.message });
     console.log(error);

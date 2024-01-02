@@ -38,7 +38,11 @@ export const userSignup = async (req, res, next) => {
             httpOnly: true,
             signed: true,
         });
-        return res.status(201).json({ message: 'OK', id: user._id.toString() });
+        return res.status(201).json({
+            message: 'OK',
+            name: existingUser.name,
+            email: existingUser.email,
+        });
     }
     catch (error) {
         return res.status(404).json({ Message: 'Error', cause: error.message });
@@ -73,9 +77,11 @@ export const userLogin = async (req, res, next) => {
             httpOnly: true,
             signed: true,
         });
-        return res
-            .status(200)
-            .json({ message: 'OK', id: existingUser._id.toString() });
+        return res.status(200).json({
+            message: 'OK',
+            name: existingUser.name,
+            email: existingUser.email,
+        });
     }
     catch (error) {
         return res.status(404).json({ Message: 'Error', cause: error.message });
