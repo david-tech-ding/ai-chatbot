@@ -15,7 +15,7 @@ const Login = () => {
     try {
       toast.loading('Signing In...', { id: 'login' });
       await auth?.login(email, password);
-      toast.loading('Signed In!', { id: 'login' });
+      toast.success('Signed In!', { id: 'login' });
     } catch (error) {
       console.log(error);
       toast.error('Could not sign in', { id: 'login' });
