@@ -88,4 +88,24 @@ export const userLogin = async (req, res, next) => {
         console.log(error);
     }
 };
+export const verifyUser = async (req, res, next) => {
+    try {
+        const existingUser = await User.findById(res.locals.jwtData.id);
+        if (!existingUser) {
+            return res.status(401).send('User not registered');
+        }
+        if (existingUser._id.toString() !== res.locals.jwtData.id) {
+            return res.status(401).send('Permissions did not match');
+        }
+        return res.status(200).json({
+            message: 'OK',
+            name: existingUser.name,
+            email: existingUser.email,
+        });
+    }
+    catch (error) {
+        return res.status(404).json({ Message: 'Error', cause: error.message });
+        console.log(error);
+    }
+};
 //# sourceMappingURL=user-controllers.js.map
