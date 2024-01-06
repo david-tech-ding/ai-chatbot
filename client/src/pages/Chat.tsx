@@ -3,36 +3,31 @@ import { useAuth } from '../context/AuthContext';
 import { blue } from '@mui/material/colors';
 import { VscSend } from 'react-icons/vsc';
 import ChatItem from '../components/chat/ChatItem';
+import { useRef, useState } from 'react';
+import { sendChatRequest } from '../helpers/api-communicator';
 
-const chatMessages = [
-  { role: 'user', content: 'Hello, how can you help me today?' },
-  {
-    role: 'assistant',
-    content:
-      'Hi there! I can assist you with various tasks. What do you need help with?',
-  },
-  {
-    role: 'user',
-    content: "I'm looking for information about machine learning.",
-  },
-  {
-    role: 'assistant',
-    content:
-      'Sure! Machine learning is a field of artificial intelligence that focuses on the development of algorithms and models that allow computers to learn from data.',
-  },
-  {
-    role: 'user',
-    content: 'Can you give me an example of a machine learning application?',
-  },
-  {
-    role: 'assistant',
-    content:
-      'Certainly! One example is image recognition, where a machine learning model can be trained to identify objects or patterns in images.',
-  },
-];
+type Message = {
+  role: 'user' | 'assistant';
+  content: string;
+};
 
 const Chat = () => {
   const auth = useAuth();
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const handleSubmit = async () => {
+    console.log(inputRef.current?.value);
+    const content = inputRef.current?.value as string;
+    if (inputRef && inputRef.current) {
+      inputRef.current.value = '';
+    }
+    const newMessage: Message = { role: 'user', content };
+    setChatMessages((prev) => [...prev, newMessage]);
+
+    const chatData = await sendChatRequest(content);
+    setChatMessages([...chatData.chats]);
+  };
+
   return (
     <Box
       sx={{
@@ -136,6 +131,8 @@ const Chat = () => {
           {chatMessages.map((chatMessage, index) => (
             <ChatItem
               content={chatMessage.content}
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              //@ts-ignore
               role={chatMessage.role}
               key={index}
             />
@@ -153,6 +150,7 @@ const Chat = () => {
           }}
         >
           <input
+            ref={inputRef}
             type="text"
             style={{
               width: '100%',
@@ -164,7 +162,10 @@ const Chat = () => {
               fontSize: '20px',
             }}
           />
-          <IconButton sx={{ ml: 'auto', color: 'white' }}>
+          <IconButton
+            onClick={handleSubmit}
+            sx={{ ml: 'auto', color: 'white' }}
+          >
             <VscSend />
           </IconButton>
         </div>
