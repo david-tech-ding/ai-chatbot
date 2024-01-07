@@ -9,7 +9,7 @@ import Error from './pages/Error';
 import { useAuth } from './context/AuthContext';
 
 const App = () => {
-  console.log(useAuth()?.isLoggedIn);
+  const auth = useAuth();
 
   return (
     <main>
@@ -18,7 +18,9 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/chat" element={<Chat />} />
+        {auth?.isLoggedIn && auth.user && (
+          <Route path="/chat" element={<Chat />} />
+        )}
         <Route path="*" element={<Error />} />
       </Routes>
     </main>

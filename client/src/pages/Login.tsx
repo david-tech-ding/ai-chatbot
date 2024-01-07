@@ -3,9 +3,12 @@ import { LuLogIn } from 'react-icons/lu';
 import CustomisedInput from '../components/shared/CustomisedInput';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const auth = useAuth();
+  const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -21,6 +24,12 @@ const Login = () => {
       toast.error('Could not sign in', { id: 'login' });
     }
   };
+
+  useEffect(() => {
+    if (auth?.user) {
+      return navigate('/chat');
+    }
+  }, [auth]);
 
   return (
     <Box

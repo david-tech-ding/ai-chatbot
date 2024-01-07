@@ -159,8 +159,8 @@ const Chat = () => {
         </Typography>
         <Box
           sx={{
-            width: '100%',
             height: '60vh',
+            width: '100%',
             borderRadius: 3,
             mx: 'auto',
             display: 'flex',
@@ -184,7 +184,7 @@ const Chat = () => {
         <div
           style={{
             width: '100%',
-            padding: '20px',
+            padding: '10px',
             borderRadius: 8,
             backgroundColor: 'rgb(40, 50, 70)',
             display: 'flex',
