@@ -3,13 +3,14 @@ import { useAuth } from '../context/AuthContext';
 import { blue } from '@mui/material/colors';
 import { VscSend } from 'react-icons/vsc';
 import ChatItem from '../components/chat/ChatItem';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   deleteUserChats,
   getUserChats,
   sendChatRequest,
 } from '../helpers/api-communicator';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -18,6 +19,7 @@ type Message = {
 
 const Chat = () => {
   const auth = useAuth();
+  const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const handleSubmit = async () => {
@@ -59,6 +61,12 @@ const Chat = () => {
           console.log(err);
           toast.error('Failed to retrieve chats', { id: 'retrievechats' });
         });
+    }
+  }, [auth]);
+
+  useEffect(() => {
+    if (!auth?.user) {
+      return navigate('/login');
     }
   }, [auth]);
 

@@ -31,4 +31,44 @@ export const generateChatCompletion = async (req, res, next) => {
         return res.status(500).json({ message: 'Something went wrong!' });
     }
 };
+export const sendChatsToUser = async (req, res, next) => {
+    try {
+        const existingUser = await User.findById(res.locals.jwtData.id);
+        if (!existingUser) {
+            return res.status(401).send('User not registered');
+        }
+        if (existingUser._id.toString() !== res.locals.jwtData.id) {
+            return res.status(401).send('Permissions did not match');
+        }
+        return res.status(200).json({
+            message: 'OK',
+            chats: existingUser.chats,
+        });
+    }
+    catch (error) {
+        return res.status(404).json({ Message: 'Error', cause: error.message });
+        console.log(error);
+    }
+};
+export const deleteChats = async (req, res, next) => {
+    try {
+        const existingUser = await User.findById(res.locals.jwtData.id);
+        if (!existingUser) {
+            return res.status(401).send('User not registered');
+        }
+        if (existingUser._id.toString() !== res.locals.jwtData.id) {
+            return res.status(401).send('Permissions did not match');
+        }
+        //@ts-ignore
+        existingUser.chats = [];
+        await existingUser.save();
+        return res.status(200).json({
+            message: 'OK',
+        });
+    }
+    catch (error) {
+        return res.status(404).json({ Message: 'Error', cause: error.message });
+        console.log(error);
+    }
+};
 //# sourceMappingURL=chat-controllers.js.map
