@@ -1,6 +1,31 @@
 import { Avatar, Box, Typography } from '@mui/material';
-import React from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { coldarkDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+const extractCodeFromString = (message: string) => {
+  //in current AI response every code block starts and end with ```
+  if (message.includes('```')) {
+    const blocks = message.split('```');
+    return blocks;
+  }
+};
+
+const isCodeBlock = (str: string) => {
+  if (
+    str.includes('=') ||
+    str.includes(';') ||
+    str.includes('[') ||
+    str.includes(']') ||
+    str.includes('{') ||
+    str.includes('}') ||
+    str.includes('#') ||
+    str.includes('/')
+  ) {
+    return true;
+  }
+  return false;
+};
 
 const ChatItem = ({
   content,
@@ -9,6 +34,7 @@ const ChatItem = ({
   content: string;
   role: 'user' | 'assistant';
 }) => {
+  const messageBlocks = extractCodeFromString(content);
   const auth = useAuth();
   return role === 'assistant' ? (
     <>
@@ -17,7 +43,20 @@ const ChatItem = ({
           <img src="openai.png" alt="openai" width={'30px'}></img>
         </Avatar>
         <Box>
-          <Typography fontSize={'20px'}>{content}</Typography>
+          {!messageBlocks && (
+            <Typography sx={{ fontSize: '20px' }}>{content}</Typography>
+          )}
+          {messageBlocks &&
+            messageBlocks.length &&
+            messageBlocks.map((block) =>
+              isCodeBlock(block) ? (
+                <SyntaxHighlighter style={coldarkDark} language="javascript">
+                  {block}
+                </SyntaxHighlighter>
+              ) : (
+                <Typography sx={{ fontSize: '20px' }}>{block}</Typography>
+              )
+            )}
         </Box>
       </Box>
     </>
