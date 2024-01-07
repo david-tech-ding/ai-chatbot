@@ -3,8 +3,13 @@ import { useAuth } from '../context/AuthContext';
 import { blue } from '@mui/material/colors';
 import { VscSend } from 'react-icons/vsc';
 import ChatItem from '../components/chat/ChatItem';
-import { useRef, useState } from 'react';
-import { sendChatRequest } from '../helpers/api-communicator';
+import { useLayoutEffect, useRef, useState } from 'react';
+import {
+  deleteUserChats,
+  getUserChats,
+  sendChatRequest,
+} from '../helpers/api-communicator';
+import toast from 'react-hot-toast';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -27,6 +32,35 @@ const Chat = () => {
     const chatData = await sendChatRequest(content);
     setChatMessages([...chatData.chats]);
   };
+
+  const handleDeleteChats = async () => {
+    try {
+      toast.loading('Deleting chats', { id: 'deletechats' });
+      await deleteUserChats();
+      setChatMessages([]);
+      toast.success('Deleted chats successfully!', { id: 'deletechats' });
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to delete chats', { id: 'deletechats' });
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (auth?.isLoggedIn && auth.user) {
+      toast.loading('Retrieving chats...', { id: 'retrievechats' });
+      getUserChats()
+        .then((data) => {
+          setChatMessages([...data.chats]);
+          toast.success('Successfully retrieved chats!', {
+            id: 'retrievechats',
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error('Failed to retrieve chats', { id: 'retrievechats' });
+        });
+    }
+  }, [auth]);
 
   return (
     <Box
@@ -77,6 +111,7 @@ const Chat = () => {
             Ask me any questions!
           </Typography>
           <Button
+            onClick={handleDeleteChats}
             sx={{
               width: '200px',
               my: 'auto',
@@ -152,8 +187,10 @@ const Chat = () => {
           <input
             ref={inputRef}
             type="text"
+            placeholder="Message AI ChatBot..."
             style={{
               width: '100%',
+              height: '10px',
               backgroundColor: 'transparent',
               padding: '10px',
               border: 'none',
