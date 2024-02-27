@@ -27,6 +27,7 @@
     "openai": "^3.3.0"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.2",
     "@types/bcrypt": "^5.0.0",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.13",
